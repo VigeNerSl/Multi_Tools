@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JS/JSON Obfuscator</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0a0a0a;
+  color: #e0e0e0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+}
+
+.bg-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+  z-index: 2;
+}
+
+header {
+  text-align: center;
+  padding: 30px 0;
+  margin-bottom: 30px;
+  border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.lang-switch {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.lang-btn {
+  padding: 8px 16px;
+  background: rgba(100, 200, 255, 0.1);
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 6px;
+  color: #64b5f6;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-btn:hover {
+  background: rgba(100, 200, 255, 0.2);
+  border-color: #64b5f6;
+}
+
+.lang-btn.active {
+  background: rgba(100, 200, 255, 0.3);
+  border-color: #64b5f6;
+  color: #fff;
+}
+
+h1 {
+  font-size: 2.5em;
+  background: linear-gradient(135deg, #64b5f6, #42a5f5, #64b5f6);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientText 3s ease infinite;
+  text-shadow: 0 0 30px rgba(100, 181, 246, 0.3);
+}
+
+@keyframes gradientText {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.subtitle {
+  color: #888;
+  margin-top: 10px;
+  font-size: 0.9em;
+  letter-spacing: 2px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: rgba(20, 20, 30, 0.8);
+  border: 1px solid rgba(100, 200, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.card:hover {
+  border-color: rgba(100, 200, 255, 0.5);
+  box-shadow: 0 8px 30px rgba(100, 200, 255, 0.15);
+  transform: translateY(-5px);
+}
+
+.card-title {
+  font-size: 1.3em;
+  margin-bottom: 15px;
+  color: #64b5f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.paste-btn {
+  padding: 6px 12px;
+  background: rgba(100, 200, 255, 0.1);
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 6px;
+  color: #64b5f6;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.paste-btn:hover {
+  background: rgba(100, 200, 255, 0.2);
+  border-color: #64b5f6;
+}
+
+.paste-btn:active {
+  transform: scale(0.95);
+}
+
+textarea {
+  width: 100%;
+  min-height: 150px;
+  max-height: 250px;
+  background: rgba(10, 10, 20, 0.9);
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 8px;
+  padding: 12px;
+  padding-bottom: 12px;
+  color: #e0e0e0;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  resize: vertical;
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-clip: padding-box;
+}
+
+textarea::-webkit-scrollbar {
+  width: 10px;
+  background: transparent;
+  height: 100%;
+}
+
+textarea::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+textarea::-webkit-scrollbar-track-piece {
+  background: transparent;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+textarea::-webkit-scrollbar-corner {
+  display: none;
+  background: transparent;
+  height: 0;
+}
+
+textarea::-webkit-resizer {
+  display: none;
+  height: 0;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: rgba(100, 200, 255, 0.5);
+  border-radius: 5px;
+  min-height: 30px;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 200, 255, 0.7);
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #64b5f6;
+  box-shadow: 0 0 15px rgba(100, 181, 246, 0.3);
+}
+
+.button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #1e3a5f, #2c5aa0);
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.button:hover {
+  background: linear-gradient(135deg, #2c5aa0, #3d6fb5);
+  box-shadow: 0 5px 20px rgba(100, 181, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.result-container {
+  margin-top: 15px;
+  display: none;
+}
+
+.result-container.show {
+  display: block;
+}
+
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.result-label {
+  color: #888;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.copy-btn {
+  padding: 6px 12px;
+  background: rgba(100, 200, 255, 0.1);
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 6px;
+  color: #64b5f6;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.copy-btn:hover {
+  background: rgba(100, 200, 255, 0.2);
+  border-color: #64b5f6;
+}
+
+.copy-btn:active {
+  transform: scale(0.95);
+}
+
+.copy-btn.copied {
+  background: rgba(81, 207, 102, 0.2);
+  border-color: #51cf66;
+  color: #51cf66;
+}
+
+.result {
+  padding: 12px;
+  background: rgba(10, 10, 20, 0.95);
+  border: 1px solid rgba(100, 200, 255, 0.2);
+  border-radius: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: break-all;
+  white-space: pre-wrap;
+  color: #aaa;
+  background-clip: padding-box;
+}
+
+.result::-webkit-scrollbar {
+  width: 10px;
+  background: transparent;
+}
+
+.result::-webkit-scrollbar-button {
+  display: none;
+  height: 0;
+}
+
+.result::-webkit-scrollbar-track {
+  background: transparent;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.result::-webkit-scrollbar-track-piece {
+  background: transparent;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.result::-webkit-scrollbar-corner {
+  display: none;
+  background: transparent;
+  height: 0;
+}
+
+.result::-webkit-resizer {
+  display: none;
+  height: 0;
+}
+
+.result::-webkit-scrollbar-thumb {
+  background: rgba(100, 200, 255, 0.5);
+  border-radius: 5px;
+  min-height: 30px;
+}
+
+.result::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 200, 255, 0.7);
+}
+
+.error {
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.3);
+}
+
+footer {
+  text-align: center;
+  padding: 20px;
+  color: #555;
+  font-size: 0.85em;
+}
+
+.author {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.author a {
+  color: #64b5f6;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background: rgba(100, 200, 255, 0.05);
+}
+
+.author a:hover {
+  color: #42a5f5;
+  background: rgba(100, 200, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  h1 {
+    font-size: 2em;
+  }
+  
+  .lang-switch {
+    position: static;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-animation"></div>
+
+<div class="container">
+  <div class="lang-switch">
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('ru')">RU</button>
+  </div>
+
+  <header>
+    <h1 data-en="OBFUSCATOR - DEOBFUSCATOR" data-ru="ОБФУСКАТОР - ДЕОБФУСКАТОР">OBFUSCATOR - DEOBFUSCATOR</h1>
+    <div class="subtitle" data-en="JSON & JavaScript Encryption Toolkit" data-ru="Инструмент шифрования JSON и JavaScript">JSON & JavaScript Encryption Toolkit</div>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card-title">
+        <span data-en="JSON Encrypt" data-ru="JSON Шифрование">JSON Encrypt</span>
+        <button class="paste-btn" onclick="pasteToInput('jsonEncInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+      </div>
+      <textarea id="jsonEncInput" data-en='{"key": "value"}' data-ru='{"ключ": "значение"}' placeholder='{"key": "value"}'></textarea>
+      <button class="button" onclick="jsonEncrypt()" data-en="Encrypt JSON" data-ru="Зашифровать JSON">Encrypt JSON</button>
+      <div class="result-container" id="jsonEncContainer">
+        <div class="result-header">
+          <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
+          <button class="copy-btn" onclick="copyResult('jsonEncResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+        </div>
+        <div class="result" id="jsonEncResult"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span data-en="JSON Decrypt" data-ru="JSON Расшифровка">JSON Decrypt</span>
+        <button class="paste-btn" onclick="pasteToInput('jsonDecInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+      </div>
+      <textarea id="jsonDecInput" placeholder='{"key": "\u0076\u0061\u006c\u0075\u0065"}'></textarea>
+      <button class="button" onclick="jsonDecrypt()" data-en="Decrypt JSON" data-ru="Расшифровать JSON">Decrypt JSON</button>
+      <div class="result-container" id="jsonDecContainer">
+        <div class="result-header">
+          <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
+          <button class="copy-btn" onclick="copyResult('jsonDecResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+        </div>
+        <div class="result" id="jsonDecResult"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span data-en="JS Obfuscate" data-ru="JS Обфускация">JS Obfuscate</span>
+        <button class="paste-btn" onclick="pasteToInput('jsObfInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+      </div>
+      <textarea id="jsObfInput" data-en="console.log('Hello World');" data-ru="console.log('Привет мир');" placeholder="console.log('Hello World');"></textarea>
+      <button class="button" onclick="jsObfuscate()" data-en="Obfuscate Code" data-ru="Обфусцировать код">Obfuscate Code</button>
+      <div class="result-container" id="jsObfContainer">
+        <div class="result-header">
+          <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
+          <button class="copy-btn" onclick="copyResult('jsObfResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+        </div>
+        <div class="result" id="jsObfResult"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span data-en="JS Deobfuscate" data-ru="JS Деобфускация">JS Deobfuscate</span>
+        <button class="paste-btn" onclick="pasteToInput('jsDeobfInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+      </div>
+      <textarea id="jsDeobfInput" data-en="Paste obfuscated code..." data-ru="Вставьте обфусцированный код..." placeholder="Paste obfuscated code..."></textarea>
+      <button class="button" onclick="jsDeobfuscate()" data-en="Deobfuscate Code" data-ru="Деобфусцировать код">Deobfuscate Code</button>
+      <div class="result-container" id="jsDeobfContainer">
+        <div class="result-header">
+          <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
+          <button class="copy-btn" onclick="copyResult('jsDeobfResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+        </div>
+        <div class="result" id="jsDeobfResult"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div style="margin-bottom: 15px; padding: 15px; background: rgba(20, 20, 30, 0.6); border-radius: 8px; border: 1px solid rgba(100, 200, 255, 0.2);">
+      <div style="color: #64b5f6; font-size: 0.9em; margin-bottom: 8px;" data-en="Usage Statistics" data-ru="Статистика использования">Usage Statistics</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; font-size: 0.85em;">
+        <div>
+          <span style="color: #888;" data-en="JSON Encrypt:" data-ru="JSON Шифрование:">JSON Encrypt:</span>
+          <span style="color: #64b5f6; font-weight: 600;" id="statJsonEnc">0</span>
+        </div>
+        <div>
+          <span style="color: #888;" data-en="JSON Decrypt:" data-ru="JSON Расшифровка:">JSON Decrypt:</span>
+          <span style="color: #64b5f6; font-weight: 600;" id="statJsonDec">0</span>
+        </div>
+        <div>
+          <span style="color: #888;" data-en="JS Obfuscate:" data-ru="JS Обфускация:">JS Obfuscate:</span>
+          <span style="color: #64b5f6; font-weight: 600;" id="statJsObf">0</span>
+        </div>
+        <div>
+          <span style="color: #888;" data-en="JS Deobfuscate:" data-ru="JS Деобфускация:">JS Deobfuscate:</span>
+          <span style="color: #64b5f6; font-weight: 600;" id="statJsDeobf">0</span>
+        </div>
+        <div>
+          <span style="color: #888;" data-en="Total:" data-ru="Всего:">Total:</span>
+          <span style="color: #51cf66; font-weight: 700;" id="statTotal">0</span>
+        </div>
+      </div>
+    </div>
+    <span data-en="© 2025 Obfuscator - Deobfuscator | For Educational Purposes Only" data-ru="© 2025 Обфускатор - Деобфускатор | Только в образовательных целях">© 2025 Obfuscator - Deobfuscator | For Educational Purposes Only</span>
+    <div class="author">
+      <span style="color: #888;" data-en="Author: VigeNerSl" data-ru="Автор: VigeNerSl">Author: VigeNerSl</span>
+      <a href="https://github.com/VigeNerSl" target="_blank">GitHub</a>
+      <a href="https://t.me/VigeNerSl" target="_blank">Telegram</a>
+    </div>
+  </footer>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, get, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC7kKg6LbtJ51sw9US2AyRmkI_NwDmE28Q",
+  authDomain: "project-vigenersl.firebaseapp.com",
+  databaseURL: "https://project-vigenersl-default-rtdb.firebaseio.com",
+  projectId: "project-vigenersl",
+  storageBucket: "project-vigenersl.firebasestorage.app",
+  messagingSenderId: "710338575654",
+  appId: "1:710338575654:web:e7ba2076dc5bd160da55e7"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+async function incrementStat(type) {
+  try {
+    await runTransaction(ref(db, "stats/" + type), currentValue => {
+      return (currentValue || 0) + 1;
+    });
+    await loadStats();
+  } catch (error) {
+    console.error("Error incrementing stat:", error);
+  }
+}
+
+async function loadStats() {
+  try {
+    const snap = await get(ref(db, "stats"));
+    if (snap.exists()) {
+      const s = snap.val();
+      document.getElementById('statJsonEnc').textContent = s.jsonEnc || 0;
+      document.getElementById('statJsonDec').textContent = s.jsonDec || 0;
+      document.getElementById('statJsObf').textContent = s.jsObf || 0;
+      document.getElementById('statJsDeobf').textContent = s.jsDeobf || 0;
+      const total = (s.jsonEnc || 0) + (s.jsonDec || 0) + (s.jsObf || 0) + (s.jsDeobf || 0);
+      document.getElementById('statTotal').textContent = total;
+    }
+  } catch (error) {
+    console.error("Error loading stats:", error);
+  }
+}
+
+window.addEventListener("load", loadStats);
+
+window.incrementStat = incrementStat;
+</script>
+
+<script>
+let currentLang = 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  document.querySelectorAll('[data-en]').forEach(el => {
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = el.getAttribute('data-' + lang);
+    } else {
+      el.textContent = el.getAttribute('data-' + lang);
+    }
+  });
+}
+
+function pasteToInput(inputId) {
+  const textarea = document.getElementById(inputId);
+  
+  if (navigator.clipboard && navigator.clipboard.readText) {
+    navigator.clipboard.readText().then(text => {
+      textarea.value = text;
+    }).catch(err => {
+      textarea.focus();
+      document.execCommand('paste');
+    });
+  } else {
+    textarea.focus();
+    textarea.select();
+    try {
+      document.execCommand('paste');
+    } catch (err) {
+      const msg = currentLang === 'en' 
+        ? 'Please use Ctrl+V (Cmd+V on Mac) to paste' 
+        : 'Используйте Ctrl+V (Cmd+V на Mac) для вставки';
+      alert(msg);
+    }
+  }
+}
+
+function showResult(containerId, resultId, text, isError = false) {
+  const container = document.getElementById(containerId);
+  const result = document.getElementById(resultId);
+  result.textContent = text;
+  result.className = 'result' + (isError ? ' error' : '');
+  container.className = 'result-container show';
+}
+
+function copyResult(resultId, btn) {
+  const result = document.getElementById(resultId);
+  const text = result.textContent;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = btn.textContent;
+    btn.textContent = currentLang === 'en' ? 'Copied!' : 'Скопировано!';
+    btn.classList.add('copied');
+    
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.classList.remove('copied');
+    }, 2000);
+  }).catch(err => {
+    console.error('Copy failed:', err);
+  });
+}
+
+function encodeCharsToUnicode(s) {
+  let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const code = s.charCodeAt(i);
+    out += '\\u' + code.toString(16).padStart(4, '0');
+  }
+  return out;
+}
+
+function jsonEncrypt() {
+  const txt = document.getElementById('jsonEncInput').value;
+  if (!txt) {
+    const errMsg = currentLang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
+    showResult('jsonEncContainer', 'jsonEncResult', errMsg, true);
+    return;
+  }
+
+  const stringRegex = /"(?:\\.|[^"\\])*"/g;
+  const res = txt.replace(stringRegex, (match) => {
+    const inner = match.slice(1, -1);
+    const encoded = encodeCharsToUnicode(inner);
+    return '"' + encoded + '"';
+  });
+
+  showResult('jsonEncContainer', 'jsonEncResult', res);
+  window.incrementStat('jsonEnc');
+}
+
+function jsonDecrypt() {
+  const txt = document.getElementById('jsonDecInput').value;
+  if (!txt) {
+    const errMsg = currentLang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
+    showResult('jsonDecContainer', 'jsonDecResult', errMsg, true);
+    return;
+  }
+
+  const stringRegex = /"(?:\\.|[^"\\])*"/g;
+  const res = txt.replace(stringRegex, (match) => {
+    const inner = match.slice(1, -1);
+    const decoded = inner.replace(/\\u([0-9a-fA-F]{4})/g, (m, hex) => {
+      return String.fromCharCode(parseInt(hex, 16));
+    });
+    return '"' + decoded + '"';
+  });
+
+  try {
+    const parsed = JSON.parse(res);
+    const formatted = JSON.stringify(parsed, null, 2);
+    showResult('jsonDecContainer', 'jsonDecResult', formatted);
+  } catch(e) {
+    showResult('jsonDecContainer', 'jsonDecResult', res);
+  }
+  window.incrementStat('jsonDec');
+}
+
+function generateRandomName() {
+  return '_0x' + Math.floor(Math.random() * 0xfffff).toString(16);
+}
+
+function jsObfuscate() {
+  const input = document.getElementById('jsObfInput').value.trim();
+  if (!input) {
+    const errMsg = currentLang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
+    showResult('jsObfContainer', 'jsObfResult', errMsg, true);
+    return;
+  }
+  
+  try {
+    const strings = [];
+    
+    const processed = input.replace(/(["'`])(?:[^\1\\]|\\[\s\S])*?\1/g, (match) => {
+      const quote = match[0];
+      const unquoted = match.slice(1, -1);
+      const index = strings.length;
+      strings.push(unquoted);
+      return `__OBFSTR${index}__`;
+    });
+    
+    const arrayName = generateRandomName();
+    const funcName = generateRandomName();
+    
+    const encodedStrings = strings.map(s => {
+      return `'${btoa(unescape(encodeURIComponent(s)))}'`;
+    }).join(',');
+    
+    let obfuscated = `(function(){var ${arrayName}=[${encodedStrings}];`;
+    obfuscated += `function ${funcName}(i){return decodeURIComponent(escape(atob(${arrayName}[i])));}`;
+    
+    let final = processed;
+    for (let i = 0; i < strings.length; i++) {
+      final = final.replace(`__OBFSTR${i}__`, `${funcName}(${i})`);
+    }
+    
+    obfuscated += final + `})();`;
+    
+    showResult('jsObfContainer', 'jsObfResult', obfuscated);
+    window.incrementStat('jsObf');
+  } catch (e) {
+    const errMsg = currentLang === 'en' ? 'Error: ' + e.message : 'Ошибка: ' + e.message;
+    showResult('jsObfContainer', 'jsObfResult', errMsg, true);
+  }
+}
+
+function jsDeobfuscate() {
+  const input = document.getElementById('jsDeobfInput').value.trim();
+  if (!input) {
+    const errMsg = currentLang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
+    showResult('jsDeobfContainer', 'jsDeobfResult', errMsg, true);
+    return;
+  }
+  
+  try {
+    let decoded = input;
+    
+    decoded = decoded.replace(/\\u([0-9a-fA-F]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
+    
+    const arrMatch = decoded.match(/var\s+(_0x[a-f0-9]+)\s*=\s*\[([^\]]+)\];/);
+    if (arrMatch) {
+      const arrName = arrMatch[1];
+      const arrContent = arrMatch[2];
+      const strs = arrContent.match(/'([^']+)'/g);
+      
+      if (strs) {
+        const decodedStrs = strs.map(s => {
+          const clean = s.slice(1, -1);
+          try {
+            return decodeURIComponent(escape(atob(clean)));
+          } catch {
+            try {
+              return atob(clean);
+            } catch {
+              return clean;
+            }
+          }
+        });
+        
+        const fMatch = decoded.match(/function\s+(_0x[a-f0-9]+)\s*\([^)]+\)\{[^}]+\}/);
+        if (fMatch) {
+          const fName = fMatch[1];
+          
+          decoded = decoded.replace(new RegExp(`${fName}\\((\\d+)\\)`, 'g'), (m, idx) => {
+            const i = parseInt(idx);
+            if (decodedStrs[i] !== undefined) {
+              return `'${decodedStrs[i].replace(/'/g, "\\'")}'`;
+            }
+            return m;
+          });
+          
+          decoded = decoded.replace(/var\s+_0x[a-f0-9]+\s*=\s*\[[^\]]+\];/, '');
+          decoded = decoded.replace(/function\s+_0x[a-f0-9]+\s*\([^)]+\)\{[^}]+\}/, '');
+        }
+      }
+    }
+    
+    decoded = decoded.replace(/0x([0-9a-f]+)/gi, (m, h) => parseInt(h, 16));
+    decoded = decoded.replace(/^\(function\(\)\{/, '').replace(/\}\)\(\);?$/, '');
+    decoded = decoded.replace(/\s+/g, ' ').replace(/;\s*/g, ';\n').replace(/\{\s*/g, '{\n').replace(/\}\s*/g, '\n}\n');
+    decoded = decoded.trim();
+    
+    showResult('jsDeobfContainer', 'jsDeobfResult', decoded);
+    window.incrementStat('jsDeobf');
+  } catch (e) {
+    const errMsg = currentLang === 'en' ? 'Error: ' + e.message : 'Ошибка: ' + e.message;
+    showResult('jsDeobfContainer', 'jsDeobfResult', errMsg, true);
+  }
+}
+</script>
+
+</body>
+</html>
