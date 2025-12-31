@@ -1,9 +1,26 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JS/JSON Obfuscator</title>
+<title>Multi Tools IDE</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4/dist/index.browser.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/terser/dist/bundle.min.js"></script>
+<script src="https://unpkg.com/prettier@3.2.5/standalone.js"></script>
+<script src="https://unpkg.com/prettier@3.2.5/plugins/babel.js"></script>
+<script src="https://unpkg.com/prettier@3.2.5/plugins/estree.js"></script>
+<script src="https://unpkg.com/prettier@3.2.5/plugins/html.js"></script>
+<script src="https://unpkg.com/prettier@3.2.5/plugins/postcss.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/json.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/plaintext.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/auto-detect.min.js"></script>
 <style>
 * {
   margin: 0;
@@ -20,22 +37,13 @@ body {
   position: relative;
 }
 
-.bg-animation {
+#vanta-bg {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 .container {
@@ -63,40 +71,92 @@ header {
 
 .lang-btn {
   padding: 8px 16px;
-  background: rgba(100, 200, 255, 0.1);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
   border: 1px solid rgba(100, 200, 255, 0.3);
   border-radius: 6px;
-  color: #64b5f6;
+  color: #fff;
   font-size: 13px;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  animation: barberPole 3s linear infinite;
+  position: relative;
+  overflow: hidden;
 }
 
 .lang-btn:hover {
-  background: rgba(100, 200, 255, 0.2);
-  border-color: #64b5f6;
+  background: linear-gradient(90deg, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #64b5f6, 
+    #3d6fb5, 
+    #2c5aa0);
+  background-size: 200% 100%;
+  animation: barberPole 1.5s linear infinite;
+  box-shadow: 0 5px 20px rgba(100, 181, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.lang-btn:active {
+  transform: translateY(0);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
+  animation: barberPole 0.75s linear infinite;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .lang-btn.active {
-  background: rgba(100, 200, 255, 0.3);
+  background: linear-gradient(90deg, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #64b5f6, 
+    #3d6fb5, 
+    #2c5aa0);
+  background-size: 200% 100%;
   border-color: #64b5f6;
   color: #fff;
+  animation: barberPole 1.5s linear infinite !important;
+}
+
+.lang-btn.active:hover {
+  animation: barberPole 0.75s linear infinite !important;
 }
 
 h1 {
   font-size: 2.5em;
-  background: linear-gradient(135deg, #64b5f6, #42a5f5, #64b5f6);
-  background-size: 200% 200%;
+  background: linear-gradient(90deg, 
+    #64b5f6, 
+    #42a5f5, 
+    #2196f3, 
+    #42a5f5, 
+    #64b5f6);
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: gradientText 3s ease infinite;
-  text-shadow: 0 0 30px rgba(100, 181, 246, 0.3);
+  animation: barberPole 2.5s linear infinite;
+  text-shadow: 0 0 30px rgba(100, 181, 246, 0.4);
 }
 
-@keyframes gradientText {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+@keyframes barberPole {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 0%;
+  }
 }
 
 .subtitle {
@@ -104,6 +164,77 @@ h1 {
   margin-top: 10px;
   font-size: 0.9em;
   letter-spacing: 2px;
+  background: linear-gradient(90deg, 
+    #888, 
+    #aaa, 
+    #ccc, 
+    #aaa, 
+    #888);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: barberPole 3s linear infinite;
+}
+
+.quick-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: rgba(20, 20, 30, 0.6);
+  border-radius: 12px;
+  border: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.quick-nav-btn {
+  padding: 10px 20px;
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: barberPole 3s linear infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.quick-nav-btn:hover {
+  background: linear-gradient(90deg, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #64b5f6, 
+    #3d6fb5, 
+    #2c5aa0);
+  background-size: 200% 100%;
+  animation: barberPole 1.5s linear infinite;
+  box-shadow: 0 5px 20px rgba(100, 181, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.quick-nav-btn:active {
+  transform: translateY(0);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
+  animation: barberPole 0.75s linear infinite;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .grid {
@@ -121,12 +252,24 @@ h1 {
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   position: relative;
+  scroll-margin-top: 20px;
 }
 
 .card:hover {
   border-color: rgba(100, 200, 255, 0.5);
   box-shadow: 0 8px 30px rgba(100, 200, 255, 0.15);
   transform: translateY(-5px);
+}
+
+.card.locked {
+  opacity: 0.5;
+  background: rgba(40, 40, 40, 0.8);
+  border-color: rgba(100, 100, 100, 0.3);
+}
+
+.card.locked:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .card-title {
@@ -137,104 +280,284 @@ h1 {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap;
+}
+
+.card-title span {
+  background: linear-gradient(90deg, 
+    #64b5f6, 
+    #42a5f5, 
+    #2196f3, 
+    #42a5f5, 
+    #64b5f6);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: barberPole 3s linear infinite;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.info-btn {
+  padding: 4px 10px;
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: barberPole 3s linear infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.info-btn:hover {
+  background: linear-gradient(90deg, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #64b5f6, 
+    #3d6fb5, 
+    #2c5aa0);
+  background-size: 200% 100%;
+  animation: barberPole 1.5s linear infinite;
+  box-shadow: 0 5px 20px rgba(100, 181, 246, 0.4);
+  transform: translateY(-2px);
+}
+
+.info-btn:active {
+  transform: translateY(0);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
+  animation: barberPole 0.75s linear infinite;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.reset-btn {
+  padding: 6px 12px;
+  background: linear-gradient(90deg, 
+    #5f1e1e, 
+    #a02c2c, 
+    #b53d3d, 
+    #a02c2c, 
+    #5f1e1e);
+  background-size: 200% 100%;
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: barberPole 3s linear infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.reset-btn:hover {
+  background: linear-gradient(90deg, 
+    #a02c2c, 
+    #b53d3d, 
+    #ff6b6b, 
+    #b53d3d, 
+    #a02c2c);
+  background-size: 200% 100%;
+  animation: barberPole 1.5s linear infinite;
+  box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+  transform: translateY(-2px);
+}
+
+.reset-btn:active {
+  transform: translateY(0);
+  background: linear-gradient(90deg, 
+    #5f1e1e, 
+    #a02c2c, 
+    #b53d3d, 
+    #a02c2c, 
+    #5f1e1e);
+  background-size: 200% 100%;
+  animation: barberPole 0.75s linear infinite;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .paste-btn {
   padding: 6px 12px;
-  background: rgba(100, 200, 255, 0.1);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
   border: 1px solid rgba(100, 200, 255, 0.3);
   border-radius: 6px;
-  color: #64b5f6;
+  color: #fff;
   font-size: 11px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  animation: barberPole 3s linear infinite;
+  position: relative;
+  overflow: hidden;
 }
 
 .paste-btn:hover {
-  background: rgba(100, 200, 255, 0.2);
-  border-color: #64b5f6;
+  background: linear-gradient(90deg, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #64b5f6, 
+    #3d6fb5, 
+    #2c5aa0);
+  background-size: 200% 100%;
+  animation: barberPole 1.5s linear infinite;
+  box-shadow: 0 5px 20px rgba(100, 181, 246, 0.4);
+  transform: translateY(-2px);
 }
 
 .paste-btn:active {
-  transform: scale(0.95);
+  transform: translateY(0);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
+  animation: barberPole 0.75s linear infinite;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
-textarea {
+.code-input-container {
+  position: relative;
+  margin-bottom: 12px;
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(10, 10, 20, 0.9);
+}
+
+.code-input-container:focus-within {
+  border-color: #64b5f6;
+  box-shadow: 0 0 15px rgba(100, 181, 246, 0.3);
+}
+
+.code-input {
   width: 100%;
   min-height: 150px;
   max-height: 250px;
-  background: rgba(10, 10, 20, 0.9);
-  border: 1px solid rgba(100, 200, 255, 0.3);
-  border-radius: 8px;
+  background: transparent !important;
+  border: none;
   padding: 12px;
-  padding-bottom: 12px;
-  color: #e0e0e0;
-  font-family: 'Courier New', monospace;
+  color: transparent !important;
+  caret-color: #e0e0e0;
+  font-family: 'Fira Code', 'Courier New', monospace;
   font-size: 13px;
+  line-height: 1.5;
   resize: vertical;
-  transition: all 0.3s ease;
-  margin-bottom: 12px;
   overflow-y: auto;
   overflow-x: hidden;
-  background-clip: padding-box;
+  position: relative;
+  z-index: 2;
+  outline: none;
+  tab-size: 2;
+  white-space: pre;
 }
 
-textarea::-webkit-scrollbar {
+.code-highlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px;
+  margin: 0;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.code-input::-webkit-scrollbar {
   width: 10px;
   background: transparent;
   height: 100%;
 }
 
-textarea::-webkit-scrollbar-button {
+.code-input::-webkit-scrollbar-button {
   display: none;
   height: 0;
 }
 
-textarea::-webkit-scrollbar-track {
+.code-input::-webkit-scrollbar-track {
   background: transparent;
   margin-top: 1px;
   margin-bottom: 1px;
 }
 
-textarea::-webkit-scrollbar-track-piece {
+.code-input::-webkit-scrollbar-track-piece {
   background: transparent;
   margin-top: 1px;
   margin-bottom: 1px;
 }
 
-textarea::-webkit-scrollbar-corner {
+.code-input::-webkit-scrollbar-corner {
   display: none;
   background: transparent;
   height: 0;
 }
 
-textarea::-webkit-resizer {
+.code-input::-webkit-resizer {
   display: none;
   height: 0;
 }
 
-textarea::-webkit-scrollbar-thumb {
+.code-input::-webkit-scrollbar-thumb {
   background: rgba(100, 200, 255, 0.5);
   border-radius: 5px;
   min-height: 30px;
 }
 
-textarea::-webkit-scrollbar-thumb:hover {
+.code-input::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 200, 255, 0.7);
-}
-
-textarea:focus {
-  outline: none;
-  border-color: #64b5f6;
-  box-shadow: 0 0 15px rgba(100, 181, 246, 0.3);
 }
 
 .button {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #1e3a5f, #2c5aa0);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
   border: 1px solid rgba(100, 200, 255, 0.3);
   border-radius: 8px;
   color: #fff;
@@ -244,18 +567,36 @@ textarea:focus {
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
+  animation: barberPole 3s linear infinite;
+  box-sizing: border-box;
   position: relative;
   overflow: hidden;
 }
 
 .button:hover {
-  background: linear-gradient(135deg, #2c5aa0, #3d6fb5);
+  background: linear-gradient(90deg, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #64b5f6, 
+    #3d6fb5, 
+    #2c5aa0);
+  background-size: 200% 100%;
+  animation: barberPole 1.5s linear infinite;
   box-shadow: 0 5px 20px rgba(100, 181, 246, 0.4);
   transform: translateY(-2px);
 }
 
 .button:active {
   transform: translateY(0);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
+  animation: barberPole 0.75s linear infinite;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .result-container {
@@ -279,34 +620,99 @@ textarea:focus {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
+  background: linear-gradient(90deg, 
+    #888, 
+    #aaa, 
+    #ccc, 
+    #aaa, 
+    #888);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: barberPole 3s linear infinite;
 }
 
 .copy-btn {
   padding: 6px 12px;
-  background: rgba(100, 200, 255, 0.1);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
   border: 1px solid rgba(100, 200, 255, 0.3);
   border-radius: 6px;
-  color: #64b5f6;
+  color: #fff;
   font-size: 11px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  animation: barberPole 3s linear infinite;
+  position: relative;
+  overflow: hidden;
 }
 
 .copy-btn:hover {
-  background: rgba(100, 200, 255, 0.2);
-  border-color: #64b5f6;
+  background: linear-gradient(90deg, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #64b5f6, 
+    #3d6fb5, 
+    #2c5aa0);
+  background-size: 200% 100%;
+  animation: barberPole 1.5s linear infinite;
+  box-shadow: 0 5px 20px rgba(100, 181, 246, 0.4);
+  transform: translateY(-2px);
 }
 
 .copy-btn:active {
-  transform: scale(0.95);
+  transform: translateY(0);
+  background: linear-gradient(90deg, 
+    #1e3a5f, 
+    #2c5aa0, 
+    #3d6fb5, 
+    #2c5aa0, 
+    #1e3a5f);
+  background-size: 200% 100%;
+  animation: barberPole 0.75s linear infinite;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .copy-btn.copied {
-  background: rgba(81, 207, 102, 0.2);
-  border-color: #51cf66;
-  color: #51cf66;
+  background: linear-gradient(90deg, 
+    #1e5f2c, 
+    #2ca04e, 
+    #3db56b, 
+    #2ca04e, 
+    #1e5f2c);
+  border-color: rgba(81, 207, 102, 0.3);
+  animation: barberPole 1.5s linear infinite;
+}
+
+.copy-btn.copied:hover {
+  background: linear-gradient(90deg, 
+    #2ca04e, 
+    #3db56b, 
+    #51cf66, 
+    #3db56b, 
+    #2ca04e);
+  background-size: 200% 100%;
+  animation: barberPole 0.75s linear infinite;
+  box-shadow: 0 5px 20px rgba(81, 207, 102, 0.4);
+}
+
+.copy-btn.copied:active {
+  background: linear-gradient(90deg, 
+    #1e5f2c, 
+    #2ca04e, 
+    #3db56b, 
+    #2ca04e, 
+    #1e5f2c);
+  background-size: 200% 100%;
+  animation: barberPole 0.4s linear infinite;
 }
 
 .result {
@@ -317,13 +723,36 @@ textarea:focus {
   max-height: 250px;
   overflow-y: auto;
   overflow-x: hidden;
-  font-family: 'Courier New', monospace;
+  font-family: 'Fira Code', 'Courier New', monospace;
   font-size: 12px;
   line-height: 1.5;
   word-break: break-all;
   white-space: pre-wrap;
   color: #aaa;
   background-clip: padding-box;
+}
+
+.result pre {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  overflow-x: auto;
+}
+
+.result code.hljs {
+  padding: 0;
+  background: transparent;
+  display: block;
+  overflow-x: auto;
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+.hljs {
+  background: transparent !important;
+  padding: 0 !important;
 }
 
 .result::-webkit-scrollbar {
@@ -374,11 +803,211 @@ textarea:focus {
   border-color: rgba(255, 107, 107, 0.3);
 }
 
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+}
+
+.modal.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(100, 200, 255, 0.3);
+  border-radius: 12px;
+  padding: 30px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modalSlide 0.3s ease;
+}
+
+@keyframes modalSlide {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 28px;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  color: #64b5f6;
+}
+
+.modal-title {
+  font-size: 1.5em;
+  color: #64b5f6;
+  margin-bottom: 15px;
+  background: linear-gradient(90deg, 
+    #64b5f6, 
+    #42a5f5, 
+    #2196f3, 
+    #42a5f5, 
+    #64b5f6);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: barberPole 2.5s linear infinite;
+}
+
+.modal-text {
+  color: #ccc;
+  line-height: 1.6;
+  font-size: 0.95em;
+}
+
+.info-item {
+  margin: 10px 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.info-type {
+  background: rgba(100, 200, 255, 0.1);
+  border-left: 3px solid #64b5f6;
+  color: #64b5f6;
+}
+
+.info-warning {
+  background: rgba(255, 193, 7, 0.1);
+  border-left: 3px solid #ffc107;
+  color: #ffc107;
+}
+
+.info-error {
+  background: rgba(244, 67, 54, 0.1);
+  border-left: 3px solid #f44336;
+  color: #f44336;
+}
+
+.info-success {
+  background: rgba(76, 175, 80, 0.1);
+  border-left: 3px solid #4caf50;
+  color: #4caf50;
+}
+
+.info-separator {
+  margin: 20px 0;
+  height: 1px;
+  background: rgba(100, 200, 255, 0.2);
+}
+
+.info-details {
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(10, 10, 20, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(100, 200, 255, 0.15);
+}
+
+.info-details-title {
+  color: #64b5f6;
+  font-size: 0.95em;
+  margin-bottom: 10px;
+  font-weight: 600;
+  background: linear-gradient(90deg, 
+    #64b5f6, 
+    #42a5f5, 
+    #2196f3, 
+    #42a5f5, 
+    #64b5f6);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: barberPole 3s linear infinite;
+}
+
+.info-details-text {
+  color: #aaa;
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+
 footer {
   text-align: center;
   padding: 20px;
   color: #555;
   font-size: 0.85em;
+}
+
+.stats-container {
+  margin-bottom: 15px;
+  padding: 15px;
+  background: rgba(20, 20, 30, 0.6);
+  border-radius: 8px;
+  border: 1px solid rgba(100, 200, 255, 0.2);
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.stats-title {
+  color: #64b5f6;
+  font-size: 0.9em;
+  background: linear-gradient(90deg, 
+    #64b5f6, 
+    #42a5f5, 
+    #2196f3, 
+    #42a5f5, 
+    #64b5f6);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: barberPole 3s linear infinite;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  font-size: 0.85em;
+}
+
+.stats-grid span:first-child {
+  background: linear-gradient(90deg, 
+    #888, 
+    #aaa, 
+    #ccc, 
+    #aaa, 
+    #888);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: barberPole 3s linear infinite;
 }
 
 .author {
@@ -404,123 +1033,306 @@ footer {
   transform: translateY(-2px);
 }
 
+.locked-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.locked-content {
+  text-align: center;
+  color: #888;
+}
+
+.locked-icon {
+  font-size: 3em;
+  margin-bottom: 10px;
+}
+
+.timer-display {
+  margin-top: 10px;
+  padding: 8px;
+  background: linear-gradient(90deg, 
+    #1e5f2c, 
+    #2ca04e, 
+    #3db56b, 
+    #2ca04e, 
+    #1e5f2c);
+  background-size: 200% 100%;
+  border: 1px solid rgba(81, 207, 102, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  text-align: center;
+  font-size: 0.9em;
+  font-weight: 600;
+  animation: barberPole 2s linear infinite;
+}
+
 @media (max-width: 768px) {
   .grid {
     grid-template-columns: 1fr;
   }
-  
+
   h1 {
     font-size: 2em;
   }
-  
+
   .lang-switch {
     position: static;
     justify-content: center;
     margin-bottom: 20px;
+  }
+
+  .card-title {
+    font-size: 1.1em;
+  }
+
+  .card-actions {
+    width: 100%;
+    justify-content: flex-end;
   }
 }
 </style>
 </head>
 <body>
 
-<div class="bg-animation"></div>
+<div id="vanta-bg"></div>
 
 <div class="container">
   <div class="lang-switch">
-    <button class="lang-btn active" onclick="setLang(event, 'en')">EN</button>
-    <button class="lang-btn" onclick="setLang(event, 'ru')">RU</button>
+    <button class="lang-btn" onclick="app.setLanguage('en')" data-lang="en">EN</button>
+    <button class="lang-btn active" onclick="app.setLanguage('ru')" data-lang="ru">RU</button>
   </div>
 
   <header>
-    <h1 data-en="OBFUSCATOR - DEOBFUSCATOR" data-ru="ОБФУСКАТОР - ДЕОБФУСКАТОР">OBFUSCATOR - DEOBFUSCATOR</h1>
-    <div class="subtitle" data-en="JSON & JavaScript Encryption Toolkit" data-ru="Инструмент шифрования JSON и JavaScript">JSON & JavaScript Encryption Toolkit</div>
+    <h1 data-en="MULTI TOOLS" data-ru="МУЛЬТИ ИНСТРУМЕНТЫ">MULTI TOOLS</h1>
+    <div class="subtitle" data-en="Universal Developer Toolkit " data-ru="Универсальный набор разработчика">Universal Developer Toolkit</div>
   </header>
 
+  <div class="quick-nav">
+    <button class="quick-nav-btn" onclick="app.scrollToCard('jsonEncCard')" data-en="JSON > Unicode" data-ru="JSON > Unicode">JSON > Unicode</button>
+    <button class="quick-nav-btn" onclick="app.scrollToCard('jsonDecCard')" data-en="Unicode > JSON" data-ru="Unicode > JSON">Unicode > JSON</button>
+    <button class="quick-nav-btn" onclick="app.scrollToCard('jsObfCard')" data-en="Code Obfuscate" data-ru="Обфускация кода">Code Obfuscate</button>
+    <button class="quick-nav-btn" onclick="app.scrollToCard('jsDeobfCard')" data-en="Code Deobfuscate" data-ru="Деобфускация кода">Code Deobfuscate</button>
+    <button class="quick-nav-btn" onclick="app.scrollToCard('minifyCard')" data-en="Code Minify" data-ru="Минификация кода">Code Minify</button>
+    <button class="quick-nav-btn" onclick="app.scrollToCard('beautifyCard')" data-en="Code Beautify" data-ru="Форматирование кода">Code Beautify</button>
+    <button class="quick-nav-btn" onclick="app.scrollToCard('uuidCard')" data-en="UUID Generator" data-ru="UUID генератор">UUID Generator</button>
+  </div>
+
   <div class="grid">
-    <div class="card">
+    <div class="card" id="jsonEncCard">
       <div class="card-title">
-        <span data-en="JSON Encrypt" data-ru="JSON Шифрование">JSON Encrypt</span>
-        <button class="paste-btn" onclick="pasteToInput('jsonEncInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+        <span data-en="CODE > Unicode Escape" data-ru="CODE > Unicode Escape">CODE > Unicode Escape</span>
+        <div class="card-actions">
+          <button class="info-btn" onclick="app.showInfo('jsonEnc')">ⓘ</button>
+          <button class="reset-btn" onclick="app.resetInput('jsonEncInput')" data-en="Reset" data-ru="Сброс">Reset</button>
+          <button class="paste-btn" onclick="app.pasteToInput('jsonEncInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+        </div>
       </div>
-      <textarea id="jsonEncInput" data-en='Paste JSON to encrypt...' data-ru='Вставьте JSON для шифрования...' placeholder='Paste JSON to encrypt...'></textarea>
-      <button class="button" onclick="jsonEncrypt()" data-en="Encrypt JSON" data-ru="Зашифровать JSON">Encrypt JSON</button>
+      <div class="code-input-container">
+        <textarea class="code-input" id="jsonEncInput" data-en='Paste CODE to convert...' data-ru='Вставьте CODE для конвертации...' placeholder='Paste JSON to convert...' oninput="app.updateHighlight(this)"></textarea>
+        <div class="code-highlight" id="jsonEncHighlight"></div>
+      </div>
+      <button class="button" onclick="app.jsonEncrypt()" data-en="Convert to Unicode" data-ru="Конвертировать в Unicode">Convert to Unicode</button>
       <div class="result-container" id="jsonEncContainer">
         <div class="result-header">
           <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
-          <button class="copy-btn" onclick="copyResult('jsonEncResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+          <button class="copy-btn" onclick="app.copyResult('jsonEncResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
         </div>
-        <div class="result" id="jsonEncResult"></div>
+        <pre class="result" id="jsonEncResult"></pre>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">
-        <span data-en="JSON Decrypt" data-ru="JSON Расшифровка">JSON Decrypt</span>
-        <button class="paste-btn" onclick="pasteToInput('jsonDecInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+    <div class="card locked" id="jsonDecCard">
+      <div class="locked-overlay" onclick="app.showAccessModal()">
+        <div class="locked-content">
+          <div class="locked-icon">🔒</div>
+        </div>
       </div>
-      <textarea id="jsonDecInput" data-en='Paste encrypted JSON...' data-ru='Вставьте зашифрованный JSON...' placeholder='Paste encrypted JSON...'></textarea>
-      <button class="button" onclick="jsonDecrypt()" data-en="Decrypt JSON" data-ru="Расшифровать JSON">Decrypt JSON</button>
+      <div class="card-title">
+        <span data-en="Unicode Escape > CODE" data-ru="Unicode Escape > CODE">Unicode Escape > CODE</span>
+        <div class="card-actions">
+          <button class="info-btn" onclick="app.showInfo('jsonDec')">ⓘ</button>
+          <button class="reset-btn" onclick="app.resetInput('jsonDecInput')" data-en="Reset" data-ru="Сброс">Reset</button>
+          <button class="paste-btn" onclick="app.pasteToInput('jsonDecInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+        </div>
+      </div>
+      <div class="code-input-container">
+        <textarea class="code-input" id="jsonDecInput" data-en='Paste Unicode escaped JSON...' data-ru='Вставьте Unicode JSON...' placeholder='Paste Unicode escaped JSON...' oninput="app.updateHighlight(this)"></textarea>
+        <div class="code-highlight" id="jsonDecHighlight"></div>
+      </div>
+      <button class="button" onclick="app.jsonDecrypt()" data-en="Convert to JSON" data-ru="Конвертировать в JSON">Convert to JSON</button>
       <div class="result-container" id="jsonDecContainer">
         <div class="result-header">
           <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
-          <button class="copy-btn" onclick="copyResult('jsonDecResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+          <button class="copy-btn" onclick="app.copyResult('jsonDecResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
         </div>
-        <div class="result" id="jsonDecResult"></div>
+        <pre class="result" id="jsonDecResult"></pre>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="jsObfCard">
       <div class="card-title">
-        <span data-en="JS Obfuscate" data-ru="JS Обфускация">JS Obfuscate</span>
-        <button class="paste-btn" onclick="pasteToInput('jsObfInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+        <span data-en="Code Obfuscate" data-ru="Обфускация кода">Code Obfuscate</span>
+        <div class="card-actions">
+          <button class="info-btn" onclick="app.showInfo('jsObf')">ⓘ</button>
+          <button class="reset-btn" onclick="app.resetInput('jsObfInput')" data-en="Reset" data-ru="Сброс">Reset</button>
+          <button class="paste-btn" onclick="app.pasteToInput('jsObfInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+        </div>
       </div>
-      <textarea id="jsObfInput" data-en="Paste code to obfuscate..." data-ru="Вставьте код для обфускации..." placeholder="Paste code to obfuscate..."></textarea>
-      <button class="button" onclick="jsObfuscate()" data-en="Obfuscate Code" data-ru="Обфусцировать код">Obfuscate Code</button>
+      <div class="code-input-container">
+        <textarea class="code-input" id="jsObfInput" data-en="Paste code to obfuscate..." data-ru="Вставьте код для обфускации..." placeholder="Paste code to obfuscate..." oninput="app.updateHighlight(this)"></textarea>
+        <div class="code-highlight" id="jsObfHighlight"></div>
+      </div>
+      <button class="button" onclick="app.jsObfuscate()" data-en="Obfuscate Code" data-ru="Обфусцировать код">Obfuscate Code</button>
       <div class="result-container" id="jsObfContainer">
         <div class="result-header">
           <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
-          <button class="copy-btn" onclick="copyResult('jsObfResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+          <button class="copy-btn" onclick="app.copyResult('jsObfResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
         </div>
-        <div class="result" id="jsObfResult"></div>
+        <pre class="result" id="jsObfResult"></pre>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">
-        <span data-en="JS Deobfuscate" data-ru="JS Деобфускация">JS Deobfuscate</span>
-        <button class="paste-btn" onclick="pasteToInput('jsDeobfInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+    <div class="card locked" id="jsDeobfCard">
+      <div class="locked-overlay" onclick="app.showAccessModal()">
+        <div class="locked-content">
+          <div class="locked-icon">🔒</div>
+        </div>
       </div>
-      <textarea id="jsDeobfInput" data-en="Paste obfuscated code..." data-ru="Вставьте обфусцированный код..." placeholder="Paste obfuscated code..."></textarea>
-      <button class="button" onclick="jsDeobfuscate()" data-en="Deobfuscate Code" data-ru="Деобфусцировать код">Deobfuscate Code</button>
+      <div class="card-title">
+        <span data-en="Code Deobfuscate" data-ru="Деобфускация кода">Code Deobfuscate</span>
+        <div class="card-actions">
+          <button class="info-btn" onclick="app.showInfo('jsDeobf')">ⓘ</button>
+          <button class="reset-btn" onclick="app.resetInput('jsDeobfInput')" data-en="Reset" data-ru="Сброс">Reset</button>
+          <button class="paste-btn" onclick="app.pasteToInput('jsDeobfInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+        </div>
+      </div>
+      <div class="code-input-container">
+        <textarea class="code-input" id="jsDeobfInput" data-en="Paste obfuscated code..." data-ru="Вставьте обфусцированный код..." placeholder="Paste obfuscated code..." oninput="app.updateHighlight(this)"></textarea>
+        <div class="code-highlight" id="jsDeobfHighlight"></div>
+      </div>
+      <button class="button" onclick="app.jsDeobfuscate()" data-en="Deobfuscate Code" data-ru="Деобфусцировать код">Deobfuscate Code</button>
       <div class="result-container" id="jsDeobfContainer">
         <div class="result-header">
           <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
-          <button class="copy-btn" onclick="copyResult('jsDeobfResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+          <button class="copy-btn" onclick="app.copyResult('jsDeobfResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
         </div>
-        <div class="result" id="jsDeobfResult"></div>
+        <pre class="result" id="jsDeobfResult"></pre>
+      </div>
+    </div>
+
+    <div class="card" id="minifyCard">
+      <div class="card-title">
+        <span data-en="Code Minify" data-ru="Минификация кода">Code Minify</span>
+        <div class="card-actions">
+          <button class="info-btn" onclick="app.showInfo('minify')">ⓘ</button>
+          <button class="reset-btn" onclick="app.resetInput('minifyInput')" data-en="Reset" data-ru="Сброс">Reset</button>
+          <button class="paste-btn" onclick="app.pasteToInput('minifyInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+        </div>
+      </div>
+      <div class="code-input-container">
+        <textarea class="code-input" id="minifyInput" data-en="Paste code to minify..." data-ru="Вставьте код для минификации..." placeholder="Paste code to minify..." oninput="app.updateHighlight(this)"></textarea>
+        <div class="code-highlight" id="minifyHighlight"></div>
+      </div>
+      <button class="button" onclick="app.codeMinify()" data-en="Minify Code" data-ru="Минифицировать код">Minify Code</button>
+      <div class="result-container" id="minifyContainer">
+        <div class="result-header">
+          <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
+          <button class="copy-btn" onclick="app.copyResult('minifyResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+        </div>
+        <pre class="result" id="minifyResult"></pre>
+      </div>
+    </div>
+
+    <div class="card" id="beautifyCard">
+      <div class="card-title">
+        <span data-en="Code Beautify" data-ru="Форматирование кода">Code Beautify</span>
+        <div class="card-actions">
+          <button class="info-btn" onclick="app.showInfo('beautify')">ⓘ</button>
+          <button class="reset-btn" onclick="app.resetInput('beautifyInput')" data-en="Reset" data-ru="Сброс">Reset</button>
+          <button class="paste-btn" onclick="app.pasteToInput('beautifyInput')" data-en="Paste" data-ru="Вставить">Paste</button>
+        </div>
+      </div>
+      <div class="code-input-container">
+        <textarea class="code-input" id="beautifyInput" data-en="Paste code to beautify..." data-ru="Вставьте код для форматирования..." placeholder="Paste code to beautify..." oninput="app.updateHighlight(this)"></textarea>
+        <div class="code-highlight" id="beautifyHighlight"></div>
+      </div>
+      <button class="button" onclick="app.codeBeautify()" data-en="Beautify Code" data-ru="Форматировать код">Beautify Code</button>
+      <div class="result-container" id="beautifyContainer">
+        <div class="result-header">
+          <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
+          <button class="copy-btn" onclick="app.copyResult('beautifyResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+        </div>
+        <pre class="result" id="beautifyResult"></pre>
+      </div>
+    </div>
+
+    <div class="card" id="uuidCard">
+      <div class="card-title">
+        <span data-en="UUID v4 Generator" data-ru="UUID v4 генератор">UUID v4 Generator</span>
+        <div class="card-actions">
+          <button class="info-btn" onclick="app.showInfo('uuid')">ⓘ</button>
+        </div>
+      </div>
+      <button class="button" onclick="app.generateUUID()" data-en="Generate UUID" data-ru="Генерировать UUID">Generate UUID</button>
+      <div class="result-container" id="uuidContainer">
+        <div class="result-header">
+          <span class="result-label" data-en="Result" data-ru="Результат">Result</span>
+          <button class="copy-btn" onclick="app.copyResult('uuidResult', this)" data-en="Copy" data-ru="Копировать">Copy</button>
+        </div>
+        <pre class="result" id="uuidResult"></pre>
       </div>
     </div>
   </div>
 
   <footer>
-    <div style="margin-bottom: 15px; padding: 15px; background: rgba(20, 20, 30, 0.6); border-radius: 8px; border: 1px solid rgba(100, 200, 255, 0.2);">
-      <div style="color: #64b5f6; font-size: 0.9em; margin-bottom: 8px;" data-en="Usage Statistics" data-ru="Статистика использования">Usage Statistics</div>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; font-size: 0.85em;">
+    <div class="stats-container">
+      <div class="stats-header">
+        <div class="stats-title" data-en="Overall Usage Statistics" data-ru="Общая статистика использования">Overall Usage Statistics</div>
+        <button class="info-btn" onclick="app.showInfo('stats')">ⓘ</button>
+      </div>
+      <div class="stats-grid">
         <div>
-          <span style="color: #888;" data-en="JSON Encrypt:" data-ru="JSON Шифрование:">JSON Encrypt:</span>
+          <span style="color: #888;" data-en="CODE > Unicode:" data-ru="JSON > Unicode:">CODE > Unicode:</span>
           <span style="color: #64b5f6; font-weight: 600;" id="statJsonEnc">0</span>
         </div>
         <div>
-          <span style="color: #888;" data-en="JSON Decrypt:" data-ru="JSON Расшифровка:">JSON Decrypt:</span>
+          <span style="color: #888;" data-en="Unicode > CODE:" data-ru="Unicode > JSON:">Unicode > CODE:</span>
           <span style="color: #64b5f6; font-weight: 600;" id="statJsonDec">0</span>
         </div>
         <div>
-          <span style="color: #888;" data-en="JS Obfuscate:" data-ru="JS Обфускация:">JS Obfuscate:</span>
+          <span style="color: #888;" data-en="Obfuscate:" data-ru="Обфускация:">Obfuscate:</span>
           <span style="color: #64b5f6; font-weight: 600;" id="statJsObf">0</span>
         </div>
         <div>
-          <span style="color: #888;" data-en="JS Deobfuscate:" data-ru="JS Деобфускация:">JS Deobfuscate:</span>
+          <span style="color: #888;" data-en="Deobfuscate:" data-ru="Деобфускация:">Deobfuscate:</span>
           <span style="color: #64b5f6; font-weight: 600;" id="statJsDeobf">0</span>
+        </div>
+        <div>
+          <span style="color: #888;" data-en="Minify:" data-ru="Минификация:">Minify:</span>
+          <span style="color: #64b5f6; font-weight: 600;" id="statMinify">0</span>
+        </div>
+        <div>
+          <span style="color: #888;" data-en="Beautify:" data-ru="Форматирование:">Beautify:</span>
+          <span style="color: #64b5f6; font-weight: 600;" id="statBeautify">0</span>
+        </div>
+        <div>
+          <span style="color: #888;" data-en="UUID:" data-ru="UUID:">UUID:</span>
+          <span style="color: #64b5f6; font-weight: 600;" id="statUUID">0</span>
+        </div>
+        <div>
+          <span style="color: #888;" data-en="Visitors:" data-ru="Посетителей:">Visitors:</span>
+          <span style="color: #51cf66; font-weight: 700;" id="statVisitors">0</span>
         </div>
         <div>
           <span style="color: #888;" data-en="Total:" data-ru="Всего:">Total:</span>
@@ -528,14 +1340,59 @@ footer {
         </div>
       </div>
     </div>
-    <span data-en="© 2025 Obfuscator - Deobfuscator | For Educational Purposes Only" data-ru="© 2025 Обфускатор - Деобфускатор | Только в образовательных целях">© 2025 Obfuscator - Deobfuscator | For Educational Purposes Only</span>
+    <div id="timerDisplay" class="timer-display" style="display: none;"></div>
+    <span data-en="© 2025 Multi Tools" data-ru="© 2025 Мульти Инструменты" style="background: linear-gradient(90deg, #555, #777, #999, #777, #555); background-size: 200% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: barberPole 3s linear infinite;">© 2025 Multi Tools</span>
     <div class="author">
-      <span style="color: #888;" data-en="Author: VigeNerSl" data-ru="Автор: VigeNerSl">Author: VigeNerSl</span>
+      <span style="color: #888;" data-en="Author: VigeNerSl" data-ru="Автор: VigeNerSl" style="background: linear-gradient(90deg, #888, #aaa, #ccc, #aaa, #888); background-size: 200% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: barberPole 3s linear infinite;">Author: VigeNerSl</span>
       <a href="https://github.com/VigeNerSl" target="_blank">GitHub</a>
       <a href="https://t.me/VigeNerSl" target="_blank">Telegram</a>
     </div>
+    <span style="color: #555;" data-en="Version: 1.0" data-ru="Версия: 1.0" style="background: linear-gradient(90deg, #555, #777, #999, #777, #555); background-size: 200% 100%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: barberPole 3s linear infinite;">Version: 1.0</span>
   </footer>
 </div>
+
+<div class="modal" id="infoModal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="app.closeModal()">&times;</span>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-text" id="modalText"></div>
+  </div>
+</div>
+
+<script>
+let vantaEffect = null;
+
+function initVanta() {
+  if (window.VANTA) {
+    vantaEffect = window.VANTA.NET({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.00,
+      scaleMobile: 1.00,
+      color: 0xb0f8,
+      backgroundColor: 0x0a0a0a
+    });
+  }
+}
+
+function destroyVanta() {
+  if (vantaEffect) {
+    vantaEffect.destroy();
+    vantaEffect = null;
+  }
+}
+
+window.addEventListener('load', initVanta);
+window.addEventListener('resize', function() {
+  if (vantaEffect) {
+    vantaEffect.resize();
+  }
+});
+</script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -554,15 +1411,65 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+const state = {
+  lang: null,
+  access: false,
+  expiry: 0,
+  timer: null,
+  stats: {},
+  inputs: {},
+  visited: false
+};
+
+function detectLanguage() {
+  const nav = navigator.language || navigator.userLanguage;
+  const lang = nav.toLowerCase().substring(0, 2);
+  const cisList = ['ru', 'ky', 'kk', 'uz', 'tg', 'az', 'uk', 'be'];
+  return cisList.includes(lang) ? 'ru' : 'en';
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('mtState');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      state.lang = parsed.lang || detectLanguage();
+      state.inputs = parsed.inputs || {};
+      state.visited = parsed.visited || false;
+      state.access = parsed.access || false;
+      state.expiry = parsed.expiry || 0;
+      
+      if (state.access && Date.now() < state.expiry) {
+        window.app.unlockCards();
+        window.app.startTimer();
+      }
+    } else {
+      state.lang = detectLanguage();
+    }
+  } catch (e) {
+    state.lang = detectLanguage();
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('mtState', JSON.stringify({
+      lang: state.lang,
+      inputs: state.inputs,
+      visited: state.visited,
+      access: state.access,
+      expiry: state.expiry
+    }));
+  } catch (e) {}
+}
+
 async function incrementStat(type) {
   try {
     await runTransaction(ref(db, "stats/" + type), currentValue => {
       return (currentValue || 0) + 1;
     });
     await loadStats();
-  } catch (error) {
-    console.error("Error incrementing stat:", error);
-  }
+  } catch (e) {}
 }
 
 async function loadStats() {
@@ -570,261 +1477,776 @@ async function loadStats() {
     const snap = await get(ref(db, "stats"));
     if (snap.exists()) {
       const s = snap.val();
+      state.stats = s;
       document.getElementById('statJsonEnc').textContent = s.jsonEnc || 0;
       document.getElementById('statJsonDec').textContent = s.jsonDec || 0;
       document.getElementById('statJsObf').textContent = s.jsObf || 0;
       document.getElementById('statJsDeobf').textContent = s.jsDeobf || 0;
-      const total = (s.jsonEnc || 0) + (s.jsonDec || 0) + (s.jsObf || 0) + (s.jsDeobf || 0);
+      document.getElementById('statMinify').textContent = s.minify || 0;
+      document.getElementById('statBeautify').textContent = s.beautify || 0;
+      document.getElementById('statUUID').textContent = s.uuid || 0;
+      document.getElementById('statVisitors').textContent = s.visitors || 0;
+      const total = (s.jsonEnc || 0) + (s.jsonDec || 0) + (s.jsObf || 0) + (s.jsDeobf || 0) + (s.minify || 0) + (s.beautify || 0) + (s.uuid || 0);
       document.getElementById('statTotal').textContent = total;
     }
-  } catch (error) {
-    console.error("Error loading stats:", error);
-  }
+  } catch (e) {}
 }
 
-window.addEventListener("load", loadStats);
-
-window.incrementStat = incrementStat;
-</script>
-
-<script>
-let currentLang = 'en';
-
-function setLang(event, lang) {
-  currentLang = lang;
-
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-
-  event.target.classList.add('active');
-
-  document.querySelectorAll('[data-en]').forEach(el => {
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      el.placeholder = el.getAttribute('data-' + lang);
-    } else {
-      el.textContent = el.getAttribute('data-' + lang);
-    }
-  });
-}
-  
-function pasteToInput(inputId) {
-  const textarea = document.getElementById(inputId);
-  
-  if (navigator.clipboard && navigator.clipboard.readText) {
-    navigator.clipboard.readText().then(text => {
-      textarea.value = text;
-    }).catch(err => {
-      textarea.focus();
-      document.execCommand('paste');
-    });
-  } else {
-    textarea.focus();
-    textarea.select();
+async function trackVisitor() {
+  if (!state.visited) {
     try {
-      document.execCommand('paste');
-    } catch (err) {
-      const msg = currentLang === 'en' 
-        ? 'Please use Ctrl+V (Cmd+V on Mac) to paste' 
-        : 'Используйте Ctrl+V (Cmd+V на Mac) для вставки';
-      alert(msg);
+      await runTransaction(ref(db, "stats/visitors"), currentValue => {
+        return (currentValue || 0) + 1;
+      });
+      state.visited = true;
+      saveState();
+      await loadStats();
+    } catch (e) {}
+  }
+}
+
+window.addEventListener("load", () => {
+  loadState();
+  loadStats();
+  trackVisitor();
+  window.app.setLanguage(state.lang, true);
+  restoreInputs();
+  window.app.initEditorHighlighting();
+});
+
+function restoreInputs() {
+  Object.keys(state.inputs).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.value = state.inputs[id];
+      window.app.updateHighlight(el);
     }
-  }
+  });
 }
 
-function showResult(containerId, resultId, text, isError = false) {
-  const container = document.getElementById(containerId);
-  const result = document.getElementById(resultId);
-  result.textContent = text;
-  result.className = 'result' + (isError ? ' error' : '');
-  container.className = 'result-container show';
+function saveInput(id, value) {
+  state.inputs[id] = value;
+  saveState();
 }
 
-function copyResult(resultId, btn) {
-  const result = document.getElementById(resultId);
-  const text = result.textContent;
+const accessKey = "\x61\x33\x62\x39\x63\x37\x64\x32\x65\x35\x66\x38";
+
+window.app = {
+  state,
+  incrementStat,
   
-  navigator.clipboard.writeText(text).then(() => {
-    const originalText = btn.textContent;
-    btn.textContent = currentLang === 'en' ? 'Copied!' : 'Скопировано!';
-    btn.classList.add('copied');
-    
-    setTimeout(() => {
-      btn.textContent = originalText;
-      btn.classList.remove('copied');
-    }, 2000);
-  }).catch(err => {
-    console.error('Copy failed:', err);
-  });
-}
-
-function encodeCharsToUnicode(s) {
-  let out = '';
-  for (let i = 0; i < s.length; i++) {
-    const code = s.charCodeAt(i);
-    out += '\\u' + code.toString(16).padStart(4, '0');
-  }
-  return out;
-}
-
-function jsonEncrypt() {
-  const txt = document.getElementById('jsonEncInput').value;
-  if (!txt) {
-    const errMsg = currentLang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
-    showResult('jsonEncContainer', 'jsonEncResult', errMsg, true);
-    return;
-  }
-
-  const stringRegex = /"(?:\\.|[^"\\])*"/g;
-  const res = txt.replace(stringRegex, (match) => {
-    const inner = match.slice(1, -1);
-    const encoded = encodeCharsToUnicode(inner);
-    return '"' + encoded + '"';
-  });
-
-  showResult('jsonEncContainer', 'jsonEncResult', res);
-  window.incrementStat('jsonEnc');
-}
-
-function jsonDecrypt() {
-  const txt = document.getElementById('jsonDecInput').value;
-  if (!txt) {
-    const errMsg = currentLang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
-    showResult('jsonDecContainer', 'jsonDecResult', errMsg, true);
-    return;
-  }
-
-  const stringRegex = /"(?:\\.|[^"\\])*"/g;
-  const res = txt.replace(stringRegex, (match) => {
-    const inner = match.slice(1, -1);
-    const decoded = inner.replace(/\\u([0-9a-fA-F]{4})/g, (m, hex) => {
-      return String.fromCharCode(parseInt(hex, 16));
+  initEditorHighlighting() {
+    document.querySelectorAll('.code-input').forEach(textarea => {
+      this.updateHighlight(textarea);
     });
-    return '"' + decoded + '"';
-  });
-
-  try {
-    const parsed = JSON.parse(res);
-    const formatted = JSON.stringify(parsed, null, 2);
-    showResult('jsonDecContainer', 'jsonDecResult', formatted);
-  } catch(e) {
-    showResult('jsonDecContainer', 'jsonDecResult', res);
-  }
-  window.incrementStat('jsonDec');
-}
-
-function generateRandomName() {
-  return '_0x' + Math.floor(Math.random() * 0xfffff).toString(16);
-}
-
-function jsObfuscate() {
-  const input = document.getElementById('jsObfInput').value.trim();
-  if (!input) {
-    const errMsg = currentLang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
-    showResult('jsObfContainer', 'jsObfResult', errMsg, true);
-    return;
-  }
+  },
   
-  try {
-    const strings = [];
+  updateHighlight(textarea) {
+    const text = textarea.value;
+    const highlightId = textarea.id.replace('Input', 'Highlight');
+    const highlightDiv = document.getElementById(highlightId);
     
-    const processed = input.replace(/(["'`])(?:[^\1\\]|\\[\s\S])*?\1/g, (match) => {
-      const quote = match[0];
-      const unquoted = match.slice(1, -1);
-      const index = strings.length;
-      strings.push(unquoted);
-      return `__OBFSTR${index}__`;
+    if (!highlightDiv) return;
+    
+    const scrollTop = textarea.scrollTop;
+    const selectionStart = textarea.selectionStart;
+    
+    const detectionResult = hljs.highlightAuto(text, ['javascript', 'json', 'html', 'css', 'xml', 'plaintext']);
+    const detectedLang = detectionResult.language || 'plaintext';
+    
+    const highlightedCode = hljs.highlight(text, { language: detectedLang }).value;
+    
+    highlightDiv.innerHTML = highlightedCode;
+    
+    textarea.scrollTop = scrollTop;
+    highlightDiv.scrollTop = scrollTop;
+    
+    saveInput(textarea.id, text);
+  },
+  
+  setLanguage(lang, skipSave = false) {
+    state.lang = lang;
+    if (!skipSave) saveState();
+    
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      if (btn.getAttribute('data-lang') === lang) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
     });
     
-    const arrayName = generateRandomName();
-    const funcName = generateRandomName();
-    
-    const encodedStrings = strings.map(s => {
-      return `'${btoa(unescape(encodeURIComponent(s)))}'`;
-    }).join(',');
-    
-    let obfuscated = `(function(){var ${arrayName}=[${encodedStrings}];`;
-    obfuscated += `function ${funcName}(i){return decodeURIComponent(escape(atob(${arrayName}[i])));}`;
-    
-    let final = processed;
-    for (let i = 0; i < strings.length; i++) {
-      final = final.replace(`__OBFSTR${i}__`, `${funcName}(${i})`);
-    }
-    
-    obfuscated += final + `})();`;
-    
-    showResult('jsObfContainer', 'jsObfResult', obfuscated);
-    window.incrementStat('jsObf');
-  } catch (e) {
-    const errMsg = currentLang === 'en' ? 'Error: ' + e.message : 'Ошибка: ' + e.message;
-    showResult('jsObfContainer', 'jsObfResult', errMsg, true);
-  }
-}
-
-function jsDeobfuscate() {
-  const input = document.getElementById('jsDeobfInput').value.trim();
-  if (!input) {
-    const errMsg = currentLang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
-    showResult('jsDeobfContainer', 'jsDeobfResult', errMsg, true);
-    return;
-  }
+    document.querySelectorAll('[data-en]').forEach(el => {
+      const text = el.getAttribute('data-' + lang);
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = text;
+      } else {
+        el.textContent = text;
+      }
+    });
+  },
   
-  try {
-    let decoded = input;
+  scrollToCard(cardId) {
+    const card = document.getElementById(cardId);
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  },
+  
+  showInfo(type) {
+    const modal = document.getElementById('infoModal');
+    const title = document.getElementById('modalTitle');
+    const text = document.getElementById('modalText');
     
-    decoded = decoded.replace(/\\u([0-9a-fA-F]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)));
-    
-    const arrMatch = decoded.match(/var\s+(_0x[a-f0-9]+)\s*=\s*\[([^\]]+)\];/);
-    if (arrMatch) {
-      const arrName = arrMatch[1];
-      const arrContent = arrMatch[2];
-      const strs = arrContent.match(/'([^']+)'/g);
-      
-      if (strs) {
-        const decodedStrs = strs.map(s => {
-          const clean = s.slice(1, -1);
-          try {
-            return decodeURIComponent(escape(atob(clean)));
-          } catch {
-            try {
-              return atob(clean);
-            } catch {
-              return clean;
-            }
-          }
-        });
-        
-        const fMatch = decoded.match(/function\s+(_0x[a-f0-9]+)\s*\([^)]+\)\{[^}]+\}/);
-        if (fMatch) {
-          const fName = fMatch[1];
-          
-          decoded = decoded.replace(new RegExp(`${fName}\\((\\d+)\\)`, 'g'), (m, idx) => {
-            const i = parseInt(idx);
-            if (decodedStrs[i] !== undefined) {
-              return `'${decodedStrs[i].replace(/'/g, "\\'")}'`;
-            }
-            return m;
-          });
-          
-          decoded = decoded.replace(/var\s+_0x[a-f0-9]+\s*=\s*\[[^\]]+\];/, '');
-          decoded = decoded.replace(/function\s+_0x[a-f0-9]+\s*\([^)]+\)\{[^}]+\}/, '');
+  const info = {
+      en: {
+        jsonEnc: {
+          title: 'JSON to Unicode Escape',
+          items: [
+            { type: 'info-type', text: 'Input: valid JSON string' },
+            { type: 'info-type', text: 'Output: Unicode \\uXXXX format' },
+            { type: 'info-warning', text: 'may break with invalid JSON' }
+          ],
+          details: 'Converts all string values in JSON to Unicode escape sequences. Each character is encoded as \\uXXXX, where XXXX is the hexadecimal Unicode code point. The tool automatically minifies output by removing unnecessary whitespace while preserving JSON structure.'
+        },
+        jsonDec: {
+          title: 'Unicode Escape to JSON',
+          items: [
+            { type: 'info-type', text: 'Input: Unicode escaped JSON' },
+            { type: 'info-type', text: 'Output: readable JSON' },
+            { type: 'info-success', text: 'auto-formatting' }
+          ],
+          details: 'Reverses the Unicode escape process, decoding \\uXXXX sequences back to original characters. The tool automatically detects Unicode escape patterns in input and converts them to readable text. After decoding, it attempts to parse and prettify the JSON with proper indentation for better readability.'
+        },
+        jsObf: {
+          title: 'Code Obfuscation',
+          items: [
+            { type: 'info-type', text: 'Input: JavaScript code' },
+            { type: 'info-type', text: 'Output: obfuscated code' },
+            { type: 'info-success', text: '100% QuickJS compatible' },
+            { type: 'info-warning', text: 'increases file size' },
+            { type: 'info-error', text: 'not suitable for binary data' }
+          ],
+          details: ''
+        },
+        jsDeobf: {
+          title: 'Code Deobfuscation',
+          items: [
+            { type: 'info-type', text: 'Input: obfuscated code' },
+            { type: 'info-type', text: 'Output: formatted code' },
+            { type: 'info-error', text: 'does not restore original names' },
+          ],
+          details: ''
+        },
+        minify: {
+          title: 'Code Minification',
+          items: [
+            { type: 'info-type', text: 'Input: any JavaScript code' },
+            { type: 'info-type', text: 'Output: minified code' },
+            { type: 'info-success', text: 'removes whitespace and comments' },
+            { type: 'info-warning', text: 'may break code' }
+          ],
+          details: 'Removes all unnecessary characters including whitespace, newlines, and comments. The process significantly reduces file size while maintaining functionality.'
+        },
+        beautify: {
+          title: 'Code Formatting',
+          items: [
+            { type: 'info-type', text: 'Input: minified code' },
+            { type: 'info-type', text: 'Output: formatted code' },
+            { type: 'info-success', text: 'supports JS, HTML, CSS, JSON' },
+            { type: 'info-warning', text: 'auto code type detection' }
+          ],
+          details: 'Restores readability of minified code'
+        },
+        uuid: {
+          title: 'UUID v4 Generator',
+          items: [
+            { type: 'info-type', text: 'Generates RFC 4122 UUID v4' },
+            { type: 'info-success', text: 'cryptographically random' }
+          ],
+          details: 'Generates version 4 UUIDs according to RFC 4122 standard (Universally Unique Identifiers). Each UUID is a 128-bit value displayed as 32 hexadecimal digits in format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx. The "4" indicates version 4 (random), and "y" is always 8, 9, A, or B. Uses cryptographically secure random number generation.'
+        },
+        stats: {
+          title: 'Usage Statistics',
+          items: [],
+          details: 'Global usage statistics. Tracks the total number of operations performed for each tool by all users.'
+        }
+      },
+      ru: {
+        jsonEnc: {
+          title: 'JSON в Unicode Escape',
+          items: [
+            { type: 'info-type', text: 'Вход: валидная JSON строка' },
+            { type: 'info-type', text: 'Выход: Unicode \\uXXXX формат' },
+            { type: 'info-warning', text: 'может сломаться при невалидном JSON' }
+          ],
+          details: 'Преобразует все строковые значения в JSON в Unicode escape последовательности. Каждый символ кодируется как \\uXXXX, где XXXX — шестнадцатеричный код символа Unicode. Инструмент автоматически минифицирует вывод, удаляя ненужные пробелы, сохраняя при этом структуру JSON.'
+        },
+        jsonDec: {
+          title: 'Unicode Escape в JSON',
+          items: [
+            { type: 'info-type', text: 'Вход: Unicode escaped JSON' },
+            { type: 'info-type', text: 'Выход: читаемый JSON' },
+            { type: 'info-success', text: 'авто-форматирование' }
+          ],
+          details: 'Обращает процесс Unicode escape, декодируя последовательности \\uXXXX обратно в исходные символы. Инструмент автоматически обнаруживает паттерны Unicode escape во входных данных и преобразует их в читаемый текст. После декодирования пытается распарсить и красиво отформатировать JSON с правильными отступами для лучшей читаемости.'
+        },
+        jsObf: {
+          title: 'Обфускация кода',
+          items: [
+            { type: 'info-type', text: 'Вход: JavaScript код' },
+            { type: 'info-type', text: 'Выход: обфусцированный код' },
+            { type: 'info-success', text: '100% совместимо с QuickJS' },
+            { type: 'info-warning', text: 'увеличивает размер файла' },
+            { type: 'info-error', text: 'не подходит для бинарных данных' }
+          ],
+          details: ''
+        },
+        jsDeobf: {
+          title: 'Деобфускация кода',
+          items: [
+            { type: 'info-type', text: 'Вход: обфусцированный код' },
+            { type: 'info-type', text: 'Выход: форматированный код' },
+            { type: 'info-error', text: 'не восстанавливает оригинальные имена' },
+          ],
+          details: ''
+        },
+        minify: {
+          title: 'Минификация кода',
+          items: [
+            { type: 'info-type', text: 'Вход: любой JavaScript код' },
+            { type: 'info-type', text: 'Выход: минифицированный код' },
+            { type: 'info-success', text: 'удаляет пробелы и комментарии' },
+            { type: 'info-warning', text: 'может сломать код' }
+          ],
+          details: 'Удаляет все ненужные символы, включая пробелы, переносы строк и комментарии. Процесс значительно уменьшает размер файла, сохраняя функциональность.'
+        },
+        beautify: {
+          title: 'Форматирование кода',
+          items: [
+            { type: 'info-type', text: 'Вход: минифицированный код' },
+            { type: 'info-type', text: 'Выход: форматированный код' },
+            { type: 'info-success', text: 'поддержка JS, HTML, CSS, JSON' },
+            { type: 'info-warning', text: 'авто-определение типа кода' }
+          ],
+          details: 'Восстановления читаемости минифицированного кода'
+        },
+        uuid: {
+          title: 'UUID v4 генератор',
+          items: [
+            { type: 'info-type', text: 'Генерирует RFC 4122 UUID v4' },
+            { type: 'info-success', text: 'криптографически случайный' }
+          ],
+          details: 'Генерирует UUID версии 4 по стандарту RFC 4122 (универсальные уникальные идентификаторы). Каждый UUID — это 128-битное значение, отображаемое как 32 шестнадцатеричные цифры в формате: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx. "4" обозначает версию 4 (случайный), а "y" всегда 8, 9, A или B. Использует криптографически безопасную генерацию случайных чисел.'
+        },
+        stats: {
+          title: 'Статистика использования',
+          items: [],
+          details: 'Глобальная статистика использования. Отслеживает общее количество операций, выполненных для каждого инструмента, всеми пользователями.'
         }
       }
+    };
+    
+    const content = info[state.lang][type];
+    title.textContent = content.title;
+    
+    const itemsHTML = content.items.map(item => 
+      `<div class="info-item ${item.type}">${item.text}</div>`
+    ).join('');
+    
+    const detailsHTML = `
+      <div class="info-separator"></div>
+      <div class="info-details">
+        <div class="info-details-title">${state.lang === 'en' ? 'Detailed Description' : 'Подробное описание'}</div>
+        <div class="info-details-text">${content.details}</div>
+      </div>
+    `;
+    
+    text.innerHTML = itemsHTML + detailsHTML;
+    modal.classList.add('show');
+  },
+  
+  closeModal() {
+    document.getElementById('infoModal').classList.remove('show');
+  },
+  
+  resetInput(inputId) {
+    const el = document.getElementById(inputId);
+    if (el) {
+      el.value = '';
+      saveInput(inputId, '');
+      this.updateHighlight(el);
+      el.blur();
+    }
+  },
+  
+  async pasteToInput(inputId) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+    
+    try {
+      const text = await navigator.clipboard.readText();
+      el.value = text;
+      saveInput(inputId, text);
+      this.updateHighlight(el);
+      el.focus();
+    } catch (e) {
+      el.focus();
+      document.execCommand('paste');
+      setTimeout(() => this.updateHighlight(el), 50);
+    }
+  },
+  
+  showResult(containerId, resultId, text, isError = false) {
+    const container = document.getElementById(containerId);
+    const result = document.getElementById(resultId);
+    
+    if (isError) {
+      result.textContent = text;
+      result.className = 'result error';
+    } else {
+      const detectionResult = hljs.highlightAuto(text, ['javascript', 'json', 'html', 'css', 'xml', 'plaintext']);
+      const detectedLang = detectionResult.language || 'plaintext';
+      
+      const highlightedResult = hljs.highlight(text, { language: detectedLang }).value;
+      
+      result.innerHTML = `<code class="hljs">${highlightedResult}</code>`;
+      result.className = 'result';
     }
     
-    decoded = decoded.replace(/0x([0-9a-f]+)/gi, (m, h) => parseInt(h, 16));
-    decoded = decoded.replace(/^\(function\(\)\{/, '').replace(/\}\)\(\);?$/, '');
-    decoded = decoded.replace(/\s+/g, ' ').replace(/;\s*/g, ';\n').replace(/\{\s*/g, '{\n').replace(/\}\s*/g, '\n}\n');
-    decoded = decoded.trim();
-    
-    showResult('jsDeobfContainer', 'jsDeobfResult', decoded);
-    window.incrementStat('jsDeobf');
-  } catch (e) {
-    const errMsg = currentLang === 'en' ? 'Error: ' + e.message : 'Ошибка: ' + e.message;
-    showResult('jsDeobfContainer', 'jsDeobfResult', errMsg, true);
-  }
-}
-</script>
+    container.className = 'result-container show';
+  },
   
+  async copyResult(resultId, btn) {
+    const result = document.getElementById(resultId);
+    const codeElement = result.querySelector('code');
+    const text = codeElement ? codeElement.textContent : result.textContent;
+    
+    try {
+      await navigator.clipboard.writeText(text);
+      const orig = btn.textContent;
+      btn.textContent = state.lang === 'en' ? 'Copied!' : 'Скопировано!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.remove('copied');
+      }, 2000);
+    } catch (e) {}
+  },
+  
+  unicodeEscape(str) {
+    let result = '';
+    for (let i = 0; i < str.length; i++) {
+      const code = str.charCodeAt(i);
+      result += '\\u' + ('0000' + code.toString(16)).slice(-4);
+    }
+    return result;
+  },
+  
+  jsonMinify(str) {
+    let i = 0;
+    const len = str.length;
+    let result = '';
+    let char;
+    
+    while (i < len) {
+      char = str.charAt(i);
+      
+      if (char === '\t' || char === '\r' || char === '\n' || char === ' ') {
+        i++;
+        continue;
+      }
+      
+      if (char === '/') {
+        const next = str.charAt(i + 1);
+        if (next === '/') {
+          const lineEnd = str.indexOf('\n', i);
+          i = lineEnd >= 0 ? lineEnd : len;
+          continue;
+        }
+        if (next === '*') {
+          const blockEnd = str.indexOf('*/', i);
+          if (blockEnd >= 0) {
+            i = blockEnd + 2;
+            continue;
+          }
+        }
+      }
+      
+      if (char === '"') {
+        const start = i;
+        while (i < len) {
+          char = str.charAt(++i);
+          if (char === '\\') {
+            i++;
+          } else if (char === '"') {
+            break;
+          }
+        }
+        result += str.slice(start, ++i);
+        continue;
+      }
+      
+      result += char;
+      i++;
+    }
+    
+    return result;
+  },
+  
+  jsonEncrypt() {
+    const txt = document.getElementById('jsonEncInput').value;
+    if (!txt) {
+      const err = state.lang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
+      this.showResult('jsonEncContainer', 'jsonEncResult', err, true);
+      return;
+    }
+    
+    try {
+      const matches = String(txt).match(/"[^"]*"|'[^']*'/g);
+      
+      if (!Array.isArray(matches)) {
+        const err = state.lang === 'en' ? 'Error: No strings found in JSON' : 'Ошибка: Строки не найдены в JSON';
+        this.showResult('jsonEncContainer', 'jsonEncResult', err, true);
+        return;
+      }
+      
+      let result = String(txt);
+      
+      for (let i = 0; i < matches.length; i++) {
+        const original = matches[i].replace(/"/g, '').replace(/'/g, '');
+        const escaped = this.unicodeEscape(original);
+        result = result.replace(matches[i], '"' + escaped + '"');
+      }
+      
+      try {
+        result = this.jsonMinify(result);
+      } catch (e) {}
+      
+      saveInput('jsonEncInput', txt);
+      this.showResult('jsonEncContainer', 'jsonEncResult', result);
+      incrementStat('jsonEnc');
+    } catch (e) {
+      const err = state.lang === 'en' ? 'Error: ' + e.message : 'Ошибка: ' + e.message;
+      this.showResult('jsonEncContainer', 'jsonEncResult', err, true);
+    }
+  },
+  
+  jsonDecrypt() {
+    if (!state.access || Date.now() > state.expiry) {
+      const msg = state.lang === 'en' ? 'Access required' : 'Требуется доступ';
+      alert(msg);
+      this.showAccessModal();
+      return;
+    }
+    
+    const txt = document.getElementById('jsonDecInput').value;
+    if (!txt) {
+      const err = state.lang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
+      this.showResult('jsonDecContainer', 'jsonDecResult', err, true);
+      return;
+    }
+    
+    try {
+      const result = txt.replace(/"(?:\\.|[^"\\])*"/g, (match) => {
+        const inner = match.slice(1, -1);
+        const decoded = inner.replace(/\\u([0-9a-fA-F]{4})/g, (m, hex) => {
+          return String.fromCharCode(parseInt(hex, 16));
+        });
+        return '"' + decoded + '"';
+      });
+      
+      try {
+        const parsed = JSON.parse(result);
+        const formatted = JSON.stringify(parsed, null, 2);
+        this.showResult('jsonDecContainer', 'jsonDecResult', formatted);
+      } catch(e) {
+        this.showResult('jsonDecContainer', 'jsonDecResult', result);
+      }
+      
+      saveInput('jsonDecInput', txt);
+      incrementStat('jsonDec');
+    } catch (e) {
+      const err = state.lang === 'en' ? 'Error: ' + e.message : 'Ошибка: ' + e.message;
+      this.showResult('jsonDecContainer', 'jsonDecResult', err, true);
+    }
+  },
+  
+  jsObfuscate() {
+    const input = document.getElementById('jsObfInput').value.trim();
+    if (!input) {
+      const err = state.lang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
+      this.showResult('jsObfContainer', 'jsObfResult', err, true);
+      return;
+    }
+    
+    try {
+      if (typeof JavaScriptObfuscator === 'undefined') {
+        const err = state.lang === 'en' ? 'Error: Library not loaded' : 'Ошибка: Библиотека не загружена';
+        this.showResult('jsObfContainer', 'jsObfResult', err, true);
+        return;
+      }
+      
+      const obfuscated = JavaScriptObfuscator.obfuscate(input, {
+        compact: true,
+        simplify: true,
+        identifierNamesGenerator: 'mangled',
+        stringArrayEncoding: ['base64'],
+        controlFlowFlattening: true,
+        deadCodeInjection: true,
+        numbersToExpressions: true,
+        stringArray: true,
+        stringArrayRotate: true,
+        stringArrayShuffle: true,
+        splitStrings: true,
+        stringArrayThreshold: 1.00,
+        target: 'browser',
+        debugProtection: false,
+        disableConsoleOutput: false,
+        selfDefending: false,
+        renameGlobals: false,
+        unicodeEscapeSequence: false
+      });
+      saveInput('jsObfInput', input);
+      this.showResult('jsObfContainer', 'jsObfResult', obfuscated.getObfuscatedCode());
+      incrementStat('jsObf');
+    } catch (e) {
+      const err = state.lang === 'en' ? 'Error: ' + e.message : 'Ошибка: ' + e.message;
+      this.showResult('jsObfContainer', 'jsObfResult', err, true);
+    }
+  },
+  
+  async jsDeobfuscate() {
+    if (!state.access || Date.now() > state.expiry) {
+      const msg = state.lang === 'en' ? 'Access required' : 'Требуется доступ';
+      alert(msg);
+      this.showAccessModal();
+      return;
+    }
+    
+    const input = document.getElementById('jsDeobfInput').value.trim();
+    
+    if (!input) {
+      const err = state.lang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
+      this.showResult('jsDeobfContainer', 'jsDeobfResult', err, true);
+      return;
+    }
+    
+    try {
+      if (typeof prettier === 'undefined') {
+        throw new Error('Prettier library not loaded');
+      }
+      
+      let deobf = input;
+      deobf = deobf.replace(/\\x([0-9a-fA-F]{2})/g, (m, hex) => String.fromCharCode(parseInt(hex, 16)));
+      deobf = deobf.replace(/\\u([0-9a-fA-F]{4})/g, (m, hex) => String.fromCharCode(parseInt(hex, 16)));
+      
+      const result = await prettier.format(deobf, {
+        parser: 'babel',
+        plugins: prettierPlugins,
+        printWidth: 80,
+        tabWidth: 2,
+        useTabs: false,
+        semi: true,
+        singleQuote: true,
+        trailingComma: 'es5',
+        bracketSpacing: true,
+        arrowParens: 'always'
+      });
+      
+      saveInput('jsDeobfInput', input);
+      this.showResult('jsDeobfContainer', 'jsDeobfResult', note + result);
+      incrementStat('jsDeobf');
+    } catch (e) {
+      const err = state.lang === 'en' ? 'Error: ' + e.message : 'Ошибка: ' + e.message;
+      this.showResult('jsDeobfContainer', 'jsDeobfResult', err, true);
+    }
+  },
+  
+  async codeMinify() {
+    const input = document.getElementById('minifyInput').value.trim();
+    
+    if (!input) {
+      const err = state.lang === 'en' ? 'Error: Input is empty' : 'Ошибка: Поле ввода пусто';
+      this.showResult('minifyContainer', 'minifyResult', err, true);
+      return;
+    }
+    
+    try {
+      if (typeof Terser === 'undefined') {
+        throw new Error('Terser library not loaded');
+      }
+      
+      const result = await Terser.minify(input, {
+        compress: {
+          dead_code: true,
+          drop_console: false,
+          drop_debugger: true,
+          keep_classnames: false,
+          keep_fnames: false,
+          passes: 2
+        },
+        mangle: {
+          toplevel: false
+        },
+        format: {
+          comments: false
+        }
+      });
+      
+      if (result.error) throw result.error;
+      
+      saveInput('minifyInput', input);
+      this.showResult('minifyContainer', 'minifyResult', result.code);
+      incrementStat('minify');
+    } catch (e) {
+      const err = state.lang === 'en' ? 'Error: ' + e.message : 'Ошибка: ' + e.message;
+      this.showResult('minifyContainer', 'minifyResult', err, true);
+    }
+  },
+  
+  async codeBeautify() {
+  const inputEl = document.getElementById('beautifyInput');
+  const input = inputEl.value.trim();
+
+  if (!input) {
+    const err =
+      state.lang === 'en'
+        ? 'Error: Input is empty'
+        : 'Ошибка: Поле ввода пусто';
+
+    this.showResult(
+      'beautifyContainer',
+      'beautifyResult',
+      err,
+      true
+    );
+    return;
+  }
+
+  try {
+    if (typeof prettier === 'undefined') {
+      throw new Error('Prettier library not loaded');
+    }
+
+    const result = await prettier.format(input, {
+      parser: 'babel',
+      plugins: prettierPlugins,
+
+      printWidth: 80,
+      tabWidth: 2,
+      useTabs: false,
+      semi: true,
+      singleQuote: true,
+      trailingComma: 'es5',
+      bracketSpacing: true,
+      arrowParens: 'always'
+    });
+
+    saveInput('beautifyInput', input);
+
+    this.showResult(
+      'beautifyContainer',
+      'beautifyResult',
+      result
+    );
+
+    incrementStat('beautify');
+  } catch (e) {
+    const err =
+      state.lang === 'en'
+        ? 'Error: ' + e.message
+        : 'Ошибка: ' + e.message;
+
+    this.showResult(
+      'beautifyContainer',
+      'beautifyResult',
+      err,
+      true
+    );
+  }
+},
+  
+  generateUUID() {
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+    this.showResult('uuidContainer', 'uuidResult', uuid);
+    incrementStat('uuid');
+  },
+  
+  showAccessModal() {
+    const pass = prompt(
+      (state.lang === 'en'
+        ? 'Enter password:\nPassword is at VigeNerSl'
+        : 'Введите пароль:\nПароль у VigeNerSl')
+    );
+
+    if (pass === accessKey) {
+      state.access = true;
+      state.expiry = Date.now() + 300000;
+      saveState();
+      this.unlockCards();
+      this.startTimer();
+      alert(state.lang === 'en'
+        ? 'Access granted for 5 minutes'
+        : 'Доступ на 5 минут');
+    } else if (pass !== null) {
+      alert(state.lang === 'en'
+        ? 'Invalid password'
+        : 'Неверный пароль');
+    }
+  },
+  
+  unlockCards() {
+    document.getElementById('jsonDecCard').classList.remove('locked');
+    document.getElementById('jsDeobfCard').classList.remove('locked');
+    document.querySelectorAll('.locked-overlay').forEach(el => el.style.display = 'none');
+  },
+  
+  lockCards() {
+    document.getElementById('jsonDecCard').classList.add('locked');
+    document.getElementById('jsDeobfCard').classList.add('locked');
+    document.querySelectorAll('.locked-overlay').forEach(el => el.style.display = 'flex');
+  },
+  
+  startTimer() {
+    const display = document.getElementById('timerDisplay');
+    display.style.display = 'block';
+    
+    if (state.timer) clearInterval(state.timer);
+    
+    state.timer = setInterval(() => {
+      const remaining = state.expiry - Date.now();
+      
+      if (remaining <= 0) {
+        clearInterval(state.timer);
+        state.access = false;
+        state.expiry = 0;
+        saveState();
+        this.lockCards();
+        display.style.display = 'none';
+        alert(state.lang === 'en' ? 'Access expired' : 'Доступ истёк');
+        return;
+      }
+      
+      const min = Math.floor(remaining / 60000);
+      const sec = Math.floor((remaining % 60000) / 1000);
+      const text = state.lang === 'en' 
+        ? `Access expires in: ${min}:${sec.toString().padStart(2, '0')}` 
+        : `Доступ истекает через: ${min}:${sec.toString().padStart(2, '0')}`;
+      display.textContent = text;
+    }, 1000);
+  }
+};
+
+window.onclick = e => {
+  const modal = document.getElementById('infoModal');
+  if (e.target === modal) app.closeModal();
+};
+</script>
+
 </body>
-</html>
+  </html>
